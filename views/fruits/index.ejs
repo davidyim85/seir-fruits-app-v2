@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head.ejs') %>
+<body>
+    <%- include('../partials/header.ejs') %>
+    <main>
+        <div>
+            <% for (fruit of fruits) { %>
+                <article>
+                    <h2>
+                        <%= fruit.name %>
+                    </h2>
+                </article>
+            <% } %>
+        </div>
+    </main>
+</body>
+</html>
