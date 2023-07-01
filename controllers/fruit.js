@@ -5,12 +5,25 @@ const Fruit = require('../models/fruit');
 // as app.use('/fruits', FruitRouter)
 const router = express.Router();
 
+
+router.use((req, res, next) => {
+    // req.session 
+    //check to see if the user is logged in via the req.session.loggedIn property. This property was defined in the controller.user.js file
+    //if the user is loggedIn we are going to use the next() which means allow the user to access the routes defined below
+    if(req.session.loggedIn){
+        next();
+    } else {
+        //else the user is NOT loggedIn, therefore just have the user redirected to the login page.
+        res.redirect('/user/login')
+    }
+})
+
 //controllers
 router.get('/', async (req, res) => {
-    const allFruits = await Fruit.find({})
+    const allFruits = await Fruit.find({ username: req.session.username })
     res.render(
         'fruits/index.ejs',
-        { fruits: allFruits }
+        { fruits: allFruits, user: req.session.username }
     )
 });
 
@@ -27,7 +40,6 @@ router.post('/', async (req, res) => {
     //     color: 'green',
     //     readyToEat: 'on'
     // }
-    console.log(req.body)
     if(req.body.readyToEat === 'on'){
         req.body.readyToEat = true;
     }else {
@@ -44,6 +56,15 @@ router.post('/', async (req, res) => {
     //     color: 'green',
     //     readyToEat: true
     // }
+
+    req.body.username = req.session.username; 
+    // {
+    //     name: 'mango',
+    //     color: 'green',
+    //     readyToEat: true,
+    //     username: req.session.username
+    // }
+
     
     await Fruit.create(req.body);
     res.redirect('/fruit');
